@@ -110,7 +110,7 @@ module Memcache
 
     def flush_all : Bool
       @socket << "flush_all\r\n"
-      @socket.gets("\r\n", chomp: true).not_nil! == "OK"
+      @socket.gets("\r\n", chomp: true) == "OK"
     end
   end
 end
