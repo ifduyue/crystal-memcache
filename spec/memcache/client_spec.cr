@@ -76,4 +76,20 @@ describe Memcache::Client do
     client.add("add", "2").should eq("NOT_STORED")
     client.get("add").should eq("1")
   end
+
+  it "gets multiple keys" do
+    client = Memcache::Client.new
+    client.flush_all
+    client.set("1", "1")
+    client.set("3", "3")
+    client.set("6", "6")
+    client.get_multi("0", "1", "2", "3", "4", "5").should eq({
+      "0" => nil,
+      "1" => "1",
+      "2" => nil,
+      "3" => "3",
+      "4" => nil,
+      "5" => nil,
+    })
+  end
 end
