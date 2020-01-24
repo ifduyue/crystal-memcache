@@ -1,4 +1,4 @@
-# memcache
+# memcache [![Build Status](https://travis-ci.org/ifduyue/crystal-memcache.svg?branch=master)](https://travis-ci.org/ifduyue/crystal-memcache)
 
 Memcache client written for crystal, talking text protocol
 
