@@ -2,14 +2,31 @@ require "socket"
 
 module Memcache
   class Client
+    getter? closed : Bool = false
+
     # Open connection to memcached server, using text protocol
     def initialize(host = "localhost", port = 11211)
       @socket = TCPSocket.new(host, port)
     end
 
+    def self.open(host = "localhost", port = 11211)
+      client = new(host, port)
+      begin
+        yield client
+      ensure
+        client.close
+      end
+    end
+
+    def close
+      return if @closed
+      @closed = true
+      @socket.close
+    end
+
     # :nodoc:
     def finalize
-      @socket.close if !@socket.nil?
+      close
     end
 
     # Set key/value pair
