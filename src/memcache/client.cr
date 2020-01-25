@@ -109,6 +109,40 @@ module Memcache
       get_multi(keys)
     end
 
+    def gat(exptime : Number, key : String) : String?
+      @socket << "gat #{exptime} #{key}\r\n"
+      header = @socket.gets("\r\n", chomp: true).not_nil!
+      return nil if header == "END"
+      headers = header.split
+      bytesize = headers[3].to_u32
+      value = @socket.read_string(bytesize)
+      @socket.read_string(7) # discard "\r\nEND\r\n"
+      value
+    end
+
+    def gat_multi(exptime : Number, keys : Array(String) | Tuple) : Hash(String, String?)
+      result = Hash(String, String?).new
+      @socket << "gat #{exptime}"
+      keys.each do |key|
+        result[key] = nil
+        @socket << " " << key
+      end
+      @socket << "\r\n"
+      while (header = @socket.gets("\r\n", chomp: true)) && header != "END"
+        headers = header.split
+        key = headers[1]
+        bytesize = headers[3].to_u32
+        value = @socket.read_string(bytesize)
+        @socket.read_string(2) # discard "\r\n"
+        result[key] = value
+      end
+      result
+    end
+
+    def gat_multi(exptime : Number, *keys : String) : Hash(String, String?)
+      gat_multi(exptime, keys)
+    end
+
     def delete(key : String) : String
       @socket << "delete #{key}\r\n"
       @socket.gets("\r\n", chomp: true).not_nil!

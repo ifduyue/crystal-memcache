@@ -33,6 +33,30 @@ describe Memcache::Client do
     client.get("you_cannot_get_me").should eq(nil)
   end
 
+  it "gets multiple keys" do
+    client = Memcache::Client.new
+    client.flush_all
+    client.set("1", "1")
+    client.set("3", "3")
+    client.set("6", "6")
+    client.get_multi("0", "1", "2", "3", "4", "5").should eq({
+      "0" => nil,
+      "1" => "1",
+      "2" => nil,
+      "3" => "3",
+      "4" => nil,
+      "5" => nil,
+    })
+    client.get_multi(["0", "1", "2", "3", "4", "5"]).should eq({
+      "0" => nil,
+      "1" => "1",
+      "2" => nil,
+      "3" => "3",
+      "4" => nil,
+      "5" => nil,
+    })
+  end
+
   it "sets with expire" do
     client = Memcache::Client.new
     client.flush_all
@@ -85,13 +109,22 @@ describe Memcache::Client do
     client.get("add").should eq("1")
   end
 
-  it "gets multiple keys" do
+  it "gats key" do
+    client = Memcache::Client.new
+    client.flush_all
+    client.set("gat", "1")
+    client.gat(2, "gat").should eq("1")
+    sleep(2)
+    client.gat(2, "gat").should eq(nil)
+  end
+
+  it "gats multiple keys" do
     client = Memcache::Client.new
     client.flush_all
     client.set("1", "1")
     client.set("3", "3")
     client.set("6", "6")
-    client.get_multi("0", "1", "2", "3", "4", "5").should eq({
+    client.gat_multi(2, "0", "1", "2", "3", "4", "5").should eq({
       "0" => nil,
       "1" => "1",
       "2" => nil,
@@ -99,11 +132,28 @@ describe Memcache::Client do
       "4" => nil,
       "5" => nil,
     })
-    client.get_multi(["0", "1", "2", "3", "4", "5"]).should eq({
+    client.gat_multi(2, ["0", "1", "2", "3", "4", "5"]).should eq({
       "0" => nil,
       "1" => "1",
       "2" => nil,
       "3" => "3",
+      "4" => nil,
+      "5" => nil,
+    })
+    sleep(2)
+    client.gat_multi(2, "0", "1", "2", "3", "4", "5").should eq({
+      "0" => nil,
+      "1" => nil,
+      "2" => nil,
+      "3" => nil,
+      "4" => nil,
+      "5" => nil,
+    })
+    client.gat_multi(2, ["0", "1", "2", "3", "4", "5"]).should eq({
+      "0" => nil,
+      "1" => nil,
+      "2" => nil,
+      "3" => nil,
       "4" => nil,
       "5" => nil,
     })
