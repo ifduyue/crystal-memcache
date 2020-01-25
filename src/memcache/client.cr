@@ -165,6 +165,21 @@ module Memcache
       @socket.gets("\r\n", chomp: true)
     end
 
+    def stats_raw : String
+      @socket << "stats\r\n"
+      @socket.gets("END\r\n", chomp: true).not_nil!
+    end
+
+    def stats : Hash(String, String)
+      @socket << "stats\r\n"
+      result = Hash(String, String).new
+      while (line = @socket.gets("\r\n", chomp: true)) && line != "END"
+        parts = line.split
+        result[parts[1]] = parts[2]
+      end
+      result
+    end
+
     def flush_all : Bool
       @socket << "flush_all\r\n"
       @socket.gets("\r\n", chomp: true) == "OK"
