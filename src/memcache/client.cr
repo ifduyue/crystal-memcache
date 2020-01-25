@@ -182,6 +182,15 @@ module Memcache
       @socket.gets("\r\n", chomp: true)
     end
 
+    def version : String
+      @socket << "version\r\n"
+      @socket.gets("\r\n", chomp: true).not_nil!.split[1]
+    end
+
+    def version_tuple : Tuple(Int32, Int32, Int32)
+      Tuple(Int32, Int32, Int32).from version.split('.').map { |x| x.to_i }
+    end
+
     def stats_raw : String
       @socket << "stats\r\n"
       @socket.gets("END\r\n", chomp: true).not_nil!

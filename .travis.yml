@@ -3,6 +3,9 @@ language: crystal
 services:
   - memcached
 
+before_script:
+  - memcached -V
+
 script:
   - crystal spec
   - crystal tool format --check
