@@ -11,6 +11,14 @@ describe Memcache::Client do
     client.get("Hello").should eq("World!")
   end
 
+  it "sets empty string and then gets" do
+    client = Memcache::Client.new
+    client.flush_all
+    client.get("empty").should eq(nil)
+    client.set("empty", "").should eq("STORED")
+    client.get("empty").should eq("")
+  end
+
   it "sets and then gets a large value" do
     client = Memcache::Client.new
     client.flush_all
