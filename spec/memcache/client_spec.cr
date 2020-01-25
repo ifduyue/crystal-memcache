@@ -99,5 +99,13 @@ describe Memcache::Client do
       "4" => nil,
       "5" => nil,
     })
+    client.get_multi(["0", "1", "2", "3", "4", "5"]).should eq({
+      "0" => nil,
+      "1" => "1",
+      "2" => nil,
+      "3" => "3",
+      "4" => nil,
+      "5" => nil,
+    })
   end
 end

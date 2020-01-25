@@ -86,7 +86,7 @@ module Memcache
       value
     end
 
-    def get_multi(*keys : String) : Hash(String, String?)
+    def get_multi(keys : Array(String) | Tuple) : Hash(String, String?)
       result = Hash(String, String?).new
       @socket << "get"
       keys.each do |key|
@@ -103,6 +103,10 @@ module Memcache
         result[key] = value
       end
       result
+    end
+
+    def get_multi(*keys : String) : Hash(String, String?)
+      get_multi(keys)
     end
 
     def delete(key : String) : String
