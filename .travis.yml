@@ -1,4 +1,7 @@
 language: crystal
+crystal:
+  - latest
+  - nightly
 
 services:
   - memcached
